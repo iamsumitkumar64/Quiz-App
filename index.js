@@ -1,5 +1,5 @@
 import { quizdata } from './ques.js';
-let no = 0, score = 0, obj1, save = [], obj2, min = Math.floor(quizdata.length / 3), sec = 20, sec2 = 10;
+let no = 0, score = 0, obj1, save = [], obj2, min = Math.floor(quizdata.length / 3) - 1, sec = 20, sec2 = 59;
 let hasQuizEnded = false;
 
 function shuffleArray(array) {
@@ -15,12 +15,12 @@ let btn = document.querySelectorAll('button');
 btn[0].addEventListener("click", () => {
     document.getElementById('first').style.display = "none";
     document.getElementById('second').style.display = "block";
+    overtimer();
     nextques();
 });
 
-function startTimer() {
+function questimer() {
     document.getElementById('timer').innerText = `${sec > 9 ? sec : '0' + sec}`;
-    document.getElementById('over').innerText = `${min > 9 ? min : '0' + min}:${sec2 > 9 ? sec2 : '0' + sec2}`;
 
     obj1 = setInterval(() => {
         sec--;
@@ -36,6 +36,9 @@ function startTimer() {
             nextques();
         }
     }, 1000);
+}
+function overtimer() {
+    document.getElementById('over').innerText = `${min > 9 ? min : '0' + min}:${sec2 > 9 ? sec2 : '0' + sec2}`;
 
     obj2 = setInterval(() => {
         if (hasQuizEnded) return;
@@ -58,7 +61,6 @@ function startTimer() {
         document.getElementById('over').innerText = `${min > 9 ? min : '0' + min}:${sec2 > 9 ? sec2 : '0' + sec2}`;
     }, 1000);
 }
-
 function nextques() {
     no++;
     clearInterval(obj1);
@@ -78,7 +80,7 @@ function nextques() {
         quizdata[no - 1].opt.forEach((quiz_opt) => {
             let label = document.createElement('label');
             let radio = document.createElement('input');
-            label.setAttribute("style", "font-size:2.5vmax;display:flex;flex-direction:row-reverse;justify-content:space-between;margin-top:1vmax;transform:scale(.8);");
+            label.setAttribute("style", "font-size:2.5vmax;display:flex;flex-direction:row-reverse;justify-content:space-between;margin-top:1vmax;");
             radio.setAttribute("type", "radio");
             radio.setAttribute("name", "question" + no);
             radio.setAttribute("value", quiz_opt);
@@ -86,22 +88,27 @@ function nextques() {
             label.appendChild(document.createTextNode(quiz_opt));
             div.appendChild(label);
             label.addEventListener('mouseover', () => {
-                label.setAttribute("style", "font-size:2.5vmax;display:flex;flex-direction:row-reverse;justify-content:space-between;margin-top:1vmax; border:1px solid rgb(0, 153, 255); border-radius:1vmax;transform:scale(1); background-color:rgb(53, 101, 129);");
-            }); 
+                label.setAttribute("style", "font-size:2.5vmax;display:flex;flex-direction:row-reverse;justify-content:space-between;margin-top:1vmax;border:1px solid rgb(0, 153, 255); background-color:rgb(53, 101, 129); padding:0 1vmax; border-radius:1vmax;");
+            });
             label.addEventListener('mouseout', () => {
-                label.setAttribute("style", "font-size:2.5vmax;display:flex;flex-direction:row-reverse;justify-content:space-between;margin-top:1vmax;transform:scale(.8);");
+                label.setAttribute("style", "font-size:2.5vmax;display:flex;flex-direction:row-reverse;justify-content:space-between;margin-top:1vmax;");
             });
         });
         document.getElementById('cont').appendChild(question);
         document.getElementById('cont').appendChild(div);
+        questimer();
     } else {
         displayResults();
     }
-    startTimer();
 }
 
 function displayResults() {
-    document.getElementsByTagName('main')[0].innerHTML = "";
+    clearInterval(obj1);
+    clearInterval(obj2);
+    // document.getElementsByTagName('main')[0].innerHTML = "";
+    document.getElementById('first').style.display = "none";
+    document.getElementById('second').style.display = "none";
+    document.getElementById('timer').style.display = "none";
     let table = document.createElement('table');
     table.setAttribute("style", "width: 100%; border-collapse: collapse; margin-top: 2vmax; margin-bottom:5vmax;");
 
@@ -154,7 +161,7 @@ function displayResults() {
 
     let l_btn = document.createElement('button');
     l_btn.innerText = 'Reset';
-    l_btn.addEventListener('click', resetfunc);
+    l_btn.addEventListener('click', () => { location.reload(); });
     document.getElementsByTagName('main')[0].appendChild(sc_brd);
     document.getElementsByTagName('main')[0].appendChild(l_btn);
     document.getElementsByTagName('main')[0].appendChild(table);
@@ -184,7 +191,7 @@ function resetfunc() {
     no = 0;
     score = 0;
     save = [];
-    min = quizdata.length - 1;
+    min = Math.floor(quizdata.length / 3)-1;
     sec = 20;
     sec2 = 59;
     hasQuizEnded = false;
